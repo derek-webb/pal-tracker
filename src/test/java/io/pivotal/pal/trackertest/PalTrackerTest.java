@@ -1,10 +1,13 @@
 package io.pivotal.pal.trackertest;
 
 import com.jayway.jsonpath.DocumentContext;
+import io.pivotal.pal.tracker.JdbcTimeEntryRepository;
 import io.pivotal.pal.tracker.PalTrackerApplication;
 import io.pivotal.pal.tracker.TimeEntry;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mariadb.jdbc.MariaDbDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -13,8 +16,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 
 import static com.jayway.jsonpath.JsonPath.parse;
@@ -26,6 +31,14 @@ public class PalTrackerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @Before
+    public void setUp() throws Exception {
+        DataSource dataSource = new MariaDbDataSource(System.getenv("SPRING_DATASOURCE_URL"));
+
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate.execute("TRUNCATE time_entries");
+    }
 
     @Test
     public void crudTest() throws Exception {

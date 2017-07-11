@@ -3,7 +3,7 @@ resources:
 - name: pal-tracker
   type: git
   source:
-    uri: TODO your github git@github.com:platform-acceleration-lab/pal-tracker.git
+    uri: git@github.com:xtreme-derek-webb/pal-tracker.git
     branch: master
     private_key: {{github-private-key}}
 - name: pal-tracker-artifacts
@@ -24,20 +24,22 @@ resources:
 - name: review-deployment
   type: cf
   source:
-    api: https://api.run.pivotal.io
+    api: https://api.sys.quandary.pal.pivotal.io
     username: {{deploy-username}}
     password: {{deploy-password}}
     organization: {{deploy-org}}
     space: {{review-space}}
+    skip_cert_check: true
 
 - name: production-deployment
   type: cf
   source:
-    api: https://api.run.pivotal.io
+    api: https://api.sys.quandary.pal.pivotal.io
     username: {{deploy-username}}
     password: {{deploy-password}}
     organization: {{deploy-org}}
     space: {{production-space}}
+    skip_cert_check: true
 
 jobs:
 - name: build
@@ -65,8 +67,6 @@ jobs:
     params:
       manifest: pal-tracker/ci/deployments/manifest-review.yml
       path: pal-tracker-artifacts/pal-tracker-*.jar
-      environment_variables:
-        WELCOME_MESSAGE: "Hello from the review environment"
 
 - name: deploy-production
   plan:
@@ -77,5 +77,3 @@ jobs:
     params:
       manifest: pal-tracker/ci/deployments/manifest-production.yml
       path: pal-tracker-artifacts/pal-tracker-*.jar
-      environment_variables:
-        WELCOME_MESSAGE: "Hello from the production environment"
